@@ -52,6 +52,14 @@ class BlogPage extends StatelessWidget {
                   });
                 },
               ),
+              PopupMenuItem(
+                child: const Text(
+                  'Refresh',
+                ),
+                onTap: () async {
+                  Provider.of<BlogProvider>(context, listen: false).getBlogs();
+                },
+              ),
             ],
           ),
         ],

@@ -13,7 +13,7 @@ class BlogProvider extends ChangeNotifier {
 
   bool get hasDataLoaded => blogResponseModel != null;
 
-  void getBlogs() {
+  getBlogs() {
     final uri = Uri.parse('$baseUrl/admin/blog-news');
 
     getToken().then((value) async {
