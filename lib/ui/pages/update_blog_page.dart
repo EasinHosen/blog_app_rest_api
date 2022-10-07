@@ -199,7 +199,7 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
 
       Provider.of<BlogProvider>(context, listen: false)
           .updateBlog(blogDataModel2);
-      // Navigator.pop(context);
+      Navigator.pop(context);
 
       // print(blogDataModel.toString());
     }

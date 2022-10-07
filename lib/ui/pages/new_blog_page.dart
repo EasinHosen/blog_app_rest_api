@@ -172,7 +172,7 @@ class _NewBlogPageState extends State<NewBlogPage> {
 
       Provider.of<BlogProvider>(context, listen: false)
           .createBlog(blogDataModel);
-      // Navigator.pop(context);
+      Navigator.pop(context);
 
       // print(blogDataModel.toString());
     }
