@@ -18,7 +18,6 @@ class _NewBlogPageState extends State<NewBlogPage> {
   final slugController = TextEditingController();
   final descriptionController = TextEditingController();
   final dateController = TextEditingController();
-  final categoryIdController = TextEditingController();
 
   final form_key = GlobalKey<FormState>();
 
@@ -29,7 +28,6 @@ class _NewBlogPageState extends State<NewBlogPage> {
     slugController.dispose();
     descriptionController.dispose();
     dateController.dispose();
-    categoryIdController.dispose();
     super.dispose();
   }
 
@@ -162,8 +160,10 @@ class _NewBlogPageState extends State<NewBlogPage> {
   void _saveBlog() {
     if (form_key.currentState!.validate()) {
       final blogDataModel = BlogData(
-        categoryId: categoryIdController.text,
         title: titleController.text,
+        categoryId: '2',
+        image: null,
+        video: null,
         subTitle: subtitleController.text,
         slug: slugController.text,
         description: descriptionController.text,

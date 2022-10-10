@@ -20,10 +20,11 @@ class _LauncherPageState extends State<LauncherPage> {
     // TODO: implement initState
     getLoginStat().then((value) {
       if (value) {
-        getToken().then((token) => {
+        getToken().then((token) async => {
               if (token != null || token!.isNotEmpty)
                 {
-                  Provider.of<BlogProvider>(context, listen: false).getBlogs(),
+                  await Provider.of<BlogProvider>(context, listen: false)
+                      .getBlogs(),
                   Navigator.pushReplacementNamed(context, BlogPage.routeName),
                 }
             });

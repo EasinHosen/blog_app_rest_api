@@ -5,6 +5,7 @@ import '../../provider/user_provider.dart';
 import 'blog_page.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
   static const String routeName = '/login_page';
 
   @override

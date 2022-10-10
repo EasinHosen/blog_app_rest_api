@@ -39,6 +39,7 @@ dependencies:
   provider:
   shared_preferences:
   http:
+  flutter_easyloading:
 
 dev_dependencies:
   flutter_test:

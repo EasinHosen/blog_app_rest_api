@@ -1,13 +1,12 @@
-import 'package:blog_app/models/blog_model.dart';
 import 'package:blog_app/provider/blog_provider.dart';
 import 'package:blog_app/provider/user_provider.dart';
 import 'package:blog_app/ui/pages/launcher_page.dart';
-import 'package:blog_app/ui/pages/new_blog_page.dart';
 import 'package:blog_app/ui/pages/update_blog_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../utils/auth_pref.dart';
+import 'new_blog_page.dart';
 
 class BlogPage extends StatelessWidget {
   const BlogPage({Key? key}) : super(key: key);
@@ -16,13 +15,7 @@ class BlogPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: false);
-    //Provider.of<BlogProvider>(context, listen: false).getBlogs();
-    BlogResponseModel? blogResponseModel;
-
     getToken().then((value) => print(value));
-    // print(provider.user?.name);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Blog'),
@@ -34,22 +27,10 @@ class BlogPage extends StatelessWidget {
                   'Logout',
                 ),
                 onTap: () async {
-                  await userProvider.logout();
-                  setLoginStat(false).then((value) {
-                    if (value) {
-                      setToken('');
-                      Navigator.pushReplacementNamed(
-                          context, LauncherPage.routeName);
-                      SnackBar snackBar =
-                          const SnackBar(content: Text('Logout Successful!'));
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    } else {
-                      SnackBar snackBar = const SnackBar(
-                        content: Text('Something went wrong!'),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    }
-                  });
+                  await Provider.of<UserProvider>(context, listen: false)
+                      .logout();
+                  Navigator.pushReplacementNamed(
+                      context, LauncherPage.routeName);
                 },
               ),
               PopupMenuItem(
@@ -57,7 +38,8 @@ class BlogPage extends StatelessWidget {
                   'Refresh',
                 ),
                 onTap: () async {
-                  Provider.of<BlogProvider>(context, listen: false).getBlogs();
+                  await Provider.of<BlogProvider>(context, listen: false)
+                      .getBlogs();
                 },
               ),
             ],
@@ -73,17 +55,14 @@ class BlogPage extends StatelessWidget {
       body: SafeArea(
         child: Consumer<BlogProvider>(
           builder: ((context, blogProvider, _) {
-            // blogProvider.getBlogs();
-            blogResponseModel = blogProvider.blogResponseModel!;
-            List<BlogData> blogsList = blogResponseModel!.data!.blogs!.data!;
-            return blogProvider.hasDataLoaded == false
+            return blogProvider.blogsList.isEmpty
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
                 : ListView.builder(
-                    itemCount: blogsList.length,
+                    itemCount: blogProvider.blogsList.length,
                     itemBuilder: (context, index) {
-                      final blogDataModel = blogsList[index];
+                      final blogDataModel = blogProvider.blogsList[index];
                       // print('id: ${blogDataModel.id}, title: ${blogDataModel.title}');
                       return ListTile(
                         title: Text(blogDataModel.title!),
@@ -113,8 +92,8 @@ class BlogPage extends StatelessWidget {
                               _showConfirmation(context).then((value) {
                                 if (value == true) {
                                   blogProvider.deleteBlog(blogDataModel.id!);
-                                  blogsList.removeWhere((element) =>
-                                      element.id == blogDataModel.id);
+                                  // blogsList.removeWhere((element) =>
+                                  //     element.id == blogDataModel.id);
                                 }
                               });
                             }

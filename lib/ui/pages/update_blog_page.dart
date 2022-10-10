@@ -54,7 +54,7 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create new blog'),
+        title: const Text('Update blog'),
         actions: [
           TextButton(
             onPressed: _saveBlog,
@@ -195,7 +195,7 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
         date: dateController.text,
       );
 
-      print(blogDataModel2.toString());
+      // print(blogDataModel2.toString());
 
       Provider.of<BlogProvider>(context, listen: false)
           .updateBlog(blogDataModel2);

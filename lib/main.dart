@@ -6,6 +6,7 @@ import 'package:blog_app/ui/pages/login_page.dart';
 import 'package:blog_app/ui/pages/new_blog_page.dart';
 import 'package:blog_app/ui/pages/update_blog_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -26,16 +27,21 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    EasyLoading.instance
+      ..indicatorType = EasyLoadingIndicatorType.wave
+      ..toastPosition = EasyLoadingToastPosition.bottom;
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      builder: EasyLoading.init(),
       initialRoute: LauncherPage.routeName,
       routes: {
         LauncherPage.routeName: (context) => const LauncherPage(),
         BlogPage.routeName: (context) => const BlogPage(),
-        LoginPage.routeName: (context) => LoginPage(),
+        LoginPage.routeName: (context) => const LoginPage(),
         NewBlogPage.routeName: (context) => const NewBlogPage(),
         UpdateBlogPage.routeName: (context) => const UpdateBlogPage(),
       },
