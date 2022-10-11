@@ -1,5 +1,6 @@
 import 'package:blog_app/provider/blog_provider.dart';
 import 'package:blog_app/provider/user_provider.dart';
+import 'package:blog_app/ui/pages/blog_details_page.dart';
 import 'package:blog_app/ui/pages/blog_page.dart';
 import 'package:blog_app/ui/pages/launcher_page.dart';
 import 'package:blog_app/ui/pages/login_page.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         LoginPage.routeName: (context) => const LoginPage(),
         NewBlogPage.routeName: (context) => const NewBlogPage(),
         UpdateBlogPage.routeName: (context) => const UpdateBlogPage(),
+        BlogDetailsPage.routeName: (context) => const BlogDetailsPage(),
       },
 
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),

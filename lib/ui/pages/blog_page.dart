@@ -1,5 +1,6 @@
 import 'package:blog_app/provider/blog_provider.dart';
 import 'package:blog_app/provider/user_provider.dart';
+import 'package:blog_app/ui/pages/blog_details_page.dart';
 import 'package:blog_app/ui/pages/launcher_page.dart';
 import 'package:blog_app/ui/pages/update_blog_page.dart';
 import 'package:flutter/material.dart';
@@ -99,6 +100,9 @@ class BlogPage extends StatelessWidget {
                             }
                           },
                         ),
+                        onTap: () => Navigator.pushNamed(
+                            context, BlogDetailsPage.routeName,
+                            arguments: blogDataModel),
                       );
                     },
                   );

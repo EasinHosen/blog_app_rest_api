@@ -40,12 +40,12 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
     // TODO: implement didChangeDependencies
     blogDataModel = ModalRoute.of(context)!.settings.arguments as BlogData;
 
-    titleController.text = blogDataModel.title! ?? '';
-    subtitleController.text = blogDataModel.subTitle! ?? '';
-    slugController.text = blogDataModel.slug! ?? '';
-    descriptionController.text = blogDataModel.description! ?? '';
-    dateController.text = blogDataModel.date! ?? '';
-    categoryIdController.text = blogDataModel.categoryId! ?? '';
+    titleController.text = blogDataModel.title!;
+    subtitleController.text = blogDataModel.subTitle!;
+    slugController.text = blogDataModel.slug!;
+    descriptionController.text = blogDataModel.description!;
+    dateController.text = blogDataModel.date!;
+    categoryIdController.text = blogDataModel.categoryId!;
 
     super.didChangeDependencies();
   }

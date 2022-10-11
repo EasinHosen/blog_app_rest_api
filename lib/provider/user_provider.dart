@@ -18,9 +18,8 @@ class UserProvider extends ChangeNotifier {
   }
 
   logout() {
-    print('logout called in provider');
-    // setLoginStat(false);
-    // setToken('');
+    setLoginStat(false);
+    setToken('');
     notifyListeners();
   }
 }
