@@ -9,8 +9,7 @@ import '../utils/constants.dart';
 
 class NetworkRequests {
   LoginResponseModel? loginResponseModel;
-  BlogResponseModel? blogResponseModel;
-  List<BlogData> blogList = [];
+  late BlogResponseModel blogResponseModel;
 
   Future<LoginResponseModel?> loginRequest(String email, String pass) async {
     final uri = Uri.parse('$baseUrl$loginUrl');
@@ -32,7 +31,7 @@ class NetworkRequests {
     return null;
   }
 
-  deleteBlogRequest(int id) {
+  deleteBlogRequest(String id) {
     final uri = Uri.parse('$baseUrl$deleteUrl$id');
 
     getToken().then((value) async {
@@ -49,33 +48,31 @@ class NetworkRequests {
     });
   }
 
-  List<BlogData> getBlogsRequest() {
+  Future<BlogResponseModel> getBlogsRequest() async {
     final uri = Uri.parse('$baseUrl$blogsUrl');
 
-    getToken().then((value) async {
-      try {
-        final response = await get(
-          uri,
-          headers: {
-            'Authorization': 'Bearer $value',
-          },
-        );
-        final json = jsonDecode(response.body);
-        // print(response.statusCode);
+    final token = await getToken();
+    try {
+      final response = await get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      final json = jsonDecode(response.body);
+      // print(response.statusCode);
 
-        if (response.statusCode == 200) {
-          blogResponseModel = BlogResponseModel.fromJson(json);
-          blogList = blogResponseModel!.data!.blogs!.data!;
+      if (response.statusCode == 200) {
+        blogResponseModel = BlogResponseModel.fromJson(json);
 
-          return blogList;
-        } else {
-          print('something went wrong');
-        }
-      } catch (e) {
-        rethrow;
+        return blogResponseModel;
+      } else {
+        print('something went wrong');
       }
-    });
-    return blogList;
+    } catch (e) {
+      rethrow;
+    }
+    return blogResponseModel;
   }
 
   createBlogRequest(BlogData blogDataModel) {
@@ -89,10 +86,6 @@ class NetworkRequests {
             'Authorization': 'Bearer $value',
             'Content-Type': 'application/json',
           },
-          //     body: {
-          //   'mode': 'formdata',
-          //   'formdata': '[${jsonEncode(blogDataModel)}]'
-          // })
           body: jsonEncode(blogDataModel),
         );
         print(response.statusCode);

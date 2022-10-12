@@ -157,7 +157,7 @@ class _NewBlogPageState extends State<NewBlogPage> {
     );
   }
 
-  void _saveBlog() {
+  void _saveBlog() async {
     if (form_key.currentState!.validate()) {
       final blogDataModel = BlogData(
         title: titleController.text,
@@ -170,9 +170,9 @@ class _NewBlogPageState extends State<NewBlogPage> {
         date: dateController.text,
       );
 
-      Provider.of<BlogProvider>(context, listen: false)
+      await Provider.of<BlogProvider>(context, listen: false)
           .createBlog(blogDataModel);
-      Navigator.pop(context);
+      Navigator.pop(context, blogDataModel);
 
       // print(blogDataModel.toString());
     }

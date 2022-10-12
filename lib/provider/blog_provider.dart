@@ -4,13 +4,10 @@ import 'package:flutter/cupertino.dart';
 
 class BlogProvider extends ChangeNotifier {
   NetworkRequests networkRequests = NetworkRequests();
-  BlogResponseModel? blogResponseModel;
+  late BlogResponseModel blogResponseModel;
 
-  List<BlogData> blogsList = [];
-
-  getBlogs() {
-    blogsList = networkRequests.getBlogsRequest();
-    notifyListeners();
+  Future<BlogResponseModel> getBlogs() {
+    return networkRequests.getBlogsRequest();
   }
 
   createBlog(BlogData blogDataModel) {
@@ -19,7 +16,7 @@ class BlogProvider extends ChangeNotifier {
   }
 
   deleteBlog(int id) {
-    networkRequests.deleteBlogRequest(id);
+    networkRequests.deleteBlogRequest(id.toString());
     notifyListeners();
   }
 
