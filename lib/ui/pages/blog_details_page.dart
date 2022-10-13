@@ -19,7 +19,8 @@ class BlogDetailsPage extends StatelessWidget {
           return [
             SliverAppBar(
               // pinned: true,
-              floating: false,
+              floating: true,
+              pinned: true,
               centerTitle: false,
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(

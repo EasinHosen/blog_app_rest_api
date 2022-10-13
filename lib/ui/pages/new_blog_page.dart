@@ -18,8 +18,19 @@ class _NewBlogPageState extends State<NewBlogPage> {
   final slugController = TextEditingController();
   final descriptionController = TextEditingController();
   final dateController = TextEditingController();
+  final imageUrlController = TextEditingController();
+  final videoUrlController = TextEditingController();
 
   final form_key = GlobalKey<FormState>();
+
+  String? dropdownCategoryId;
+
+  var catIdList = [
+    '1',
+    '2',
+    '3',
+    '4',
+  ];
 
   @override
   void dispose() {
@@ -28,6 +39,8 @@ class _NewBlogPageState extends State<NewBlogPage> {
     slugController.dispose();
     descriptionController.dispose();
     dateController.dispose();
+    imageUrlController.dispose();
+    videoUrlController.dispose();
     super.dispose();
   }
 
@@ -69,7 +82,7 @@ class _NewBlogPageState extends State<NewBlogPage> {
                   return null;
                 }
               },
-            ),
+            ), //title
             const SizedBox(
               height: 10,
             ),
@@ -84,7 +97,7 @@ class _NewBlogPageState extends State<NewBlogPage> {
                   ),
                 ),
               ),
-            ),
+            ), //subtitle
             const SizedBox(
               height: 10,
             ),
@@ -99,7 +112,7 @@ class _NewBlogPageState extends State<NewBlogPage> {
                   ),
                 ),
               ),
-            ),
+            ), //slug
             const SizedBox(
               height: 10,
             ),
@@ -124,15 +137,88 @@ class _NewBlogPageState extends State<NewBlogPage> {
                   return null;
                 }
               },
+            ), //description
+            const SizedBox(
+              height: 10,
             ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: TextFormField(
+                    keyboardType: TextInputType.datetime,
+                    controller: dateController,
+                    decoration: InputDecoration(
+                      labelText: 'Date(yyyy-MM-dd)',
+                      border: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Theme.of(context).primaryColor),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Date is required!';
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Flexible(
+                  flex: 1,
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButtonFormField<String>(
+                          decoration: const InputDecoration.collapsed(
+                            hintText: 'Category Id',
+                          ),
+                          isExpanded: true,
+                          icon: const Icon(Icons.arrow_drop_down),
+                          value: dropdownCategoryId,
+                          items: catIdList
+                              .map(
+                                (e) => DropdownMenuItem<String>(
+                                  value: e,
+                                  child: Text(e),
+                                ),
+                              )
+                              .toList(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a category id';
+                            } else {
+                              return null;
+                            }
+                          },
+                          onChanged: (val) {
+                            setState(() {
+                              dropdownCategoryId = val;
+                            });
+                          }),
+                    ),
+                  ),
+                ),
+              ],
+            ), //date and category id
             const SizedBox(
               height: 10,
             ),
             TextFormField(
-              keyboardType: TextInputType.datetime,
-              controller: dateController,
+              controller: imageUrlController,
               decoration: InputDecoration(
-                labelText: 'Date(yyyy-MM-dd)',
+                labelText: 'Image url',
                 border: OutlineInputBorder(
                   borderSide: BorderSide(color: Theme.of(context).primaryColor),
                   borderRadius: const BorderRadius.all(
@@ -140,16 +226,21 @@ class _NewBlogPageState extends State<NewBlogPage> {
                   ),
                 ),
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Date is required!';
-                } else {
-                  return null;
-                }
-              },
             ),
             const SizedBox(
               height: 10,
+            ),
+            TextFormField(
+              controller: videoUrlController,
+              decoration: InputDecoration(
+                labelText: 'Video url',
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -161,9 +252,9 @@ class _NewBlogPageState extends State<NewBlogPage> {
     if (form_key.currentState!.validate()) {
       final blogDataModel = BlogData(
         title: titleController.text,
-        categoryId: '2',
-        image: null,
-        video: null,
+        categoryId: dropdownCategoryId ?? '1',
+        image: imageUrlController.text,
+        video: videoUrlController.text,
         subTitle: subtitleController.text,
         slug: slugController.text,
         description: descriptionController.text,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:blog_app/models/blog_model.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart';
 
 import '../models/user_model.dart';
@@ -41,7 +42,11 @@ class NetworkRequests {
         }, body: {
           'id': id,
         });
-        print(response.statusCode);
+        if (response.statusCode == 200) {
+          EasyLoading.showToast('Deleted successfully!');
+        } else {
+          EasyLoading.showToast('Something went wrong!');
+        }
       } catch (e) {
         rethrow;
       }
@@ -64,10 +69,9 @@ class NetworkRequests {
 
       if (response.statusCode == 200) {
         blogResponseModel = BlogResponseModel.fromJson(json);
-
         return blogResponseModel;
       } else {
-        print('something went wrong');
+        EasyLoading.showToast('Something went wrong!');
       }
     } catch (e) {
       rethrow;
@@ -88,8 +92,11 @@ class NetworkRequests {
           },
           body: jsonEncode(blogDataModel),
         );
-        print(response.statusCode);
-        print(response.body);
+        if (response.statusCode == 200) {
+          EasyLoading.showToast('Created successfully!');
+        } else {
+          EasyLoading.showToast('Something went wrong!');
+        }
       } catch (e) {
         rethrow;
       }
@@ -107,16 +114,12 @@ class NetworkRequests {
             'Authorization': 'Bearer $value',
             'Content-Type': 'application/json',
           },
-          //     body: {
-          //   'mode': 'formdata',
-          //   'formdata': '[${jsonEncode(blogDataModel)}]'
-          // })
           body: jsonEncode(blogDataModel),
         );
-        print(response.statusCode);
-        print(response.body);
         if (response.statusCode == 200) {
-          print('updated');
+          EasyLoading.showToast('Updated successfully!');
+        } else {
+          EasyLoading.showToast('Something went wrong!');
         }
       } catch (e) {
         rethrow;

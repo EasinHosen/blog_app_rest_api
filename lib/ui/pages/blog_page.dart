@@ -73,7 +73,6 @@ class _BlogPageState extends State<BlogPage> {
               // print(value);
               setState(() {
                 blogList.insert(0, value as BlogData);
-                EasyLoading.showToast('New Blog created!');
               });
             } else {
               print('canceled');
@@ -113,8 +112,15 @@ class _BlogPageState extends State<BlogPage> {
                             context,
                             UpdateBlogPage.routeName,
                             arguments: blog,
-                          );
-                          EasyLoading.showToast('Blog updated!');
+                          ).then((value) {
+                            if (value != null) {
+                              setState(() {
+                                blogList[index] = value as BlogData;
+                              });
+                            } else {
+                              EasyLoading.showToast('Canceled');
+                            }
+                          });
                         } else if (value == 2) {
                           _showConfirmation(context).then((value) {
                             if (value == true) {
@@ -123,7 +129,6 @@ class _BlogPageState extends State<BlogPage> {
                                 blogList.removeWhere(
                                     (element) => blog.id == element.id);
                               });
-                              EasyLoading.showToast('Blog deleted!');
                             }
                           });
                         }
@@ -132,7 +137,6 @@ class _BlogPageState extends State<BlogPage> {
                     onTap: () {
                       Navigator.pushNamed(context, BlogDetailsPage.routeName,
                           arguments: blog);
-                      print(index);
                     },
                   );
                 },
