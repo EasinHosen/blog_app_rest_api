@@ -73,9 +73,7 @@ class _BlogPageState extends State<BlogPage> {
           Navigator.pushNamed(context, NewBlogPage.routeName).then((value) {
             if (value != null) {
               // print(value);
-              setState(() {
-                // blogList.insert(0, value as BlogData);
-              });
+              blogProvider.getBlogList().then((value) => setState(() {}));
             } else {
               print('canceled');
             }
