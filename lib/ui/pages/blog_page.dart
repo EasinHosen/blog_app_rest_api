@@ -22,14 +22,14 @@ class BlogPage extends StatefulWidget {
 class _BlogPageState extends State<BlogPage> {
   late Future<BlogResponseModel> blogResponseModel;
   late final BlogProvider blogProvider;
-  late List<BlogData> blogList;
+  // late List<BlogData> blogList;
 
   @override
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     blogProvider = Provider.of<BlogProvider>(context, listen: false);
-    blogResponseModel = blogProvider.getBlogs();
+    // blogResponseModel = blogProvider.getBlogs();
   }
 
   @override
@@ -44,6 +44,16 @@ class _BlogPageState extends State<BlogPage> {
             itemBuilder: (context) => [
               PopupMenuItem(
                 child: const Text(
+                  'Refresh',
+                ),
+                onTap: () {
+                  // blogProvider.getBlogs();
+                  blogProvider.getBlogList();
+                  setState(() {});
+                },
+              ),
+              PopupMenuItem(
+                child: const Text(
                   'Logout',
                 ),
                 onTap: () async {
@@ -51,14 +61,6 @@ class _BlogPageState extends State<BlogPage> {
                       .logout();
                   Navigator.pushReplacementNamed(
                       context, LauncherPage.routeName);
-                },
-              ),
-              PopupMenuItem(
-                child: const Text(
-                  'Refresh',
-                ),
-                onTap: () {
-                  setState(() {});
                 },
               ),
             ],
@@ -72,7 +74,7 @@ class _BlogPageState extends State<BlogPage> {
             if (value != null) {
               // print(value);
               setState(() {
-                blogList.insert(0, value as BlogData);
+                // blogList.insert(0, value as BlogData);
               });
             } else {
               print('canceled');
@@ -81,15 +83,15 @@ class _BlogPageState extends State<BlogPage> {
         },
       ),
       body: SafeArea(
-        child: FutureBuilder<BlogResponseModel>(
-          future: blogResponseModel,
+        child: FutureBuilder<List<BlogData>>(
+          future: blogProvider.getBlogList(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              blogList = snapshot.data!.data!.blogs!.data!;
               return ListView.builder(
-                itemCount: blogList.length,
+                // itemCount: blogList.length,
+                itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
-                  final blog = blogList[index];
+                  final blog = snapshot.data![index];
                   return ListTile(
                     title: Text(blog.title!),
                     subtitle: Text(blog.subTitle!),
@@ -114,9 +116,9 @@ class _BlogPageState extends State<BlogPage> {
                             arguments: blog,
                           ).then((value) {
                             if (value != null) {
-                              setState(() {
-                                blogList[index] = value as BlogData;
-                              });
+                              blogProvider
+                                  .getBlogList()
+                                  .then((value) => setState(() {}));
                             } else {
                               EasyLoading.showToast('Canceled');
                             }
@@ -124,11 +126,8 @@ class _BlogPageState extends State<BlogPage> {
                         } else if (value == 2) {
                           _showConfirmation(context).then((value) {
                             if (value == true) {
-                              setState(() {
-                                blogProvider.deleteBlog(blog.id!);
-                                blogList.removeWhere(
-                                    (element) => blog.id == element.id);
-                              });
+                              blogProvider.deleteBlog(blog.id!);
+                              setState(() {});
                             }
                           });
                         }
@@ -149,60 +148,6 @@ class _BlogPageState extends State<BlogPage> {
             );
           },
         ),
-        // child: Consumer<BlogProvider>(
-        //   builder: ((context, blogProvider, _) {
-        //     return blogProvider.blogsList.isEmpty
-        //         ? const Center(
-        //             child: CircularProgressIndicator(),
-        //           )
-        //         : ListView.builder(
-        //             itemCount: blogProvider.blogsList.length,
-        //             itemBuilder: (context, index) {
-        //               final blogDataModel = blogProvider.blogsList[index];
-        //               // print('id: ${blogDataModel.id}, title: ${blogDataModel.title}');
-        //               return ListTile(
-        //                 title: Text(blogDataModel.title!),
-        //                 subtitle: Text(blogDataModel.subTitle!),
-        //                 trailing: PopupMenuButton(
-        //                   itemBuilder: (context) {
-        //                     return [
-        //                       const PopupMenuItem(
-        //                         value: 1,
-        //                         child: Text('Edit'),
-        //                       ),
-        //                       const PopupMenuItem(
-        //                         value: 2,
-        //                         child: Text('Delete'),
-        //                       ),
-        //                     ];
-        //                   },
-        //                   onSelected: (int value) {
-        //                     if (value == 1) {
-        //                       Navigator.pushNamed(
-        //                         context,
-        //                         UpdateBlogPage.routeName,
-        //                         arguments: blogDataModel,
-        //                       );
-        //                       print('edit');
-        //                     } else if (value == 2) {
-        //                       _showConfirmation(context).then((value) {
-        //                         if (value == true) {
-        //                           blogProvider.deleteBlog(blogDataModel.id!);
-        //                           // blogsList.removeWhere((element) =>
-        //                           //     element.id == blogDataModel.id);
-        //                         }
-        //                       });
-        //                     }
-        //                   },
-        //                 ),
-        //                 onTap: () => Navigator.pushNamed(
-        //                     context, BlogDetailsPage.routeName,
-        //                     arguments: blogDataModel),
-        //               );
-        //             },
-        //           );
-        //   }),
-        // ),
       ),
     );
   }

@@ -24,7 +24,8 @@ class _LauncherPageState extends State<LauncherPage> {
               if (token != null || token!.isNotEmpty)
                 {
                   await Provider.of<BlogProvider>(context, listen: false)
-                      .getBlogs(),
+                      .getBlogList(),
+                  // .getBlogs(),
                   Navigator.pushReplacementNamed(context, BlogPage.routeName),
                 }
             });

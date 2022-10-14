@@ -11,6 +11,7 @@ import '../utils/constants.dart';
 class NetworkRequests {
   LoginResponseModel? loginResponseModel;
   late BlogResponseModel blogResponseModel;
+  late List<BlogData> blogList;
 
   Future<LoginResponseModel?> loginRequest(String email, String pass) async {
     final uri = Uri.parse('$baseUrl$loginUrl');
@@ -53,7 +54,7 @@ class NetworkRequests {
     });
   }
 
-  Future<BlogResponseModel> getBlogsRequest() async {
+  Future<List<BlogData>> getBlogListRequest() async {
     final uri = Uri.parse('$baseUrl$blogsUrl');
 
     final token = await getToken();
@@ -65,18 +66,20 @@ class NetworkRequests {
         },
       );
       final json = jsonDecode(response.body);
-      // print(response.statusCode);
 
       if (response.statusCode == 200) {
         blogResponseModel = BlogResponseModel.fromJson(json);
-        return blogResponseModel;
+        blogList = blogResponseModel.data!.blogs!.data!;
+        print('network: list length- ${blogList.length}');
+
+        return blogList;
       } else {
         EasyLoading.showToast('Something went wrong!');
       }
     } catch (e) {
       rethrow;
     }
-    return blogResponseModel;
+    return blogList;
   }
 
   createBlogRequest(BlogData blogDataModel) {

@@ -6,8 +6,8 @@ class BlogProvider extends ChangeNotifier {
   NetworkRequests networkRequests = NetworkRequests();
   late BlogResponseModel blogResponseModel;
 
-  Future<BlogResponseModel> getBlogs() {
-    return networkRequests.getBlogsRequest();
+  Future<List<BlogData>> getBlogList() {
+    return networkRequests.getBlogListRequest();
   }
 
   createBlog(BlogData blogDataModel) {

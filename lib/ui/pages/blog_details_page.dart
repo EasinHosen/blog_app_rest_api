@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/blog_model.dart';
@@ -12,41 +11,47 @@ class BlogDetailsPage extends StatelessWidget {
     final blogDataModel =
         ModalRoute.of(context)!.settings.arguments as BlogData;
     return Scaffold(
-      body: NestedScrollView(
-        dragStartBehavior: DragStartBehavior.start,
-        floatHeaderSlivers: true,
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              // pinned: true,
-              floating: true,
-              pinned: true,
-              centerTitle: false,
-              elevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                collapseMode: CollapseMode.parallax,
-                title: Text(blogDataModel.title!),
-                background:
-                    blogDataModel.image == null || blogDataModel.image!.isEmpty
-                        ? Image.asset(
-                            'assets/images/placeholder.png',
-                            width: double.infinity,
-                            height: 200,
-                            fit: BoxFit.cover,
-                          )
-                        : Image.network(
-                            blogDataModel.image!,
-                            width: double.infinity,
-                            height: 200,
-                            fit: BoxFit.cover,
-                          ),
-              ),
-              expandedHeight: 200,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              collapseMode: CollapseMode.parallax,
+              title: Text(blogDataModel.title!),
+              background:
+                  blogDataModel.image == null || blogDataModel.image!.isEmpty
+                      ? Image.asset(
+                          'assets/images/placeholder.png',
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.network(
+                          blogDataModel.image!,
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
             ),
-          ];
-        },
-        body:
-            SafeArea(child: Text('description: ${blogDataModel.description}')),
+            expandedHeight: 200,
+          ),
+          SliverFillRemaining(
+            child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text('description: ${blogDataModel.description}'),
+                ],
+              ),
+            ),
+          )
+        ],
+        // body: SafeArea(
+        //   child: Text('description: ${blogDataModel.description}'),
+        // ),
       ),
     );
   }
