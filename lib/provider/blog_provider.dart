@@ -35,7 +35,7 @@ class BlogProvider extends ChangeNotifier {
     createBlogRequestResponse =
         await networkRequests.createBlogRequestResponse(blogDataModel);
     if (createBlogRequestResponse.statusCode == 200) {
-      blogList[0] = blogDataModel;
+      blogList.insert(0, blogDataModel);
     } else {
       EasyLoading.showToast('Something went wrong!');
     }
