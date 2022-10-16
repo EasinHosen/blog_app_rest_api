@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/blog_model.dart';
 import '../../provider/blog_provider.dart';
+import '../../utils/helper_functions.dart';
 
 class UpdateBlogPage extends StatefulWidget {
   const UpdateBlogPage({Key? key}) : super(key: key);
@@ -15,6 +16,7 @@ class UpdateBlogPage extends StatefulWidget {
 
 class _UpdateBlogPageState extends State<UpdateBlogPage> {
   late BlogData blogDataModel;
+  late int blogIndex;
   late String dropdownCategoryId;
   final titleController = TextEditingController();
   final subtitleController = TextEditingController();
@@ -49,7 +51,9 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
   @override
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
-    blogDataModel = ModalRoute.of(context)!.settings.arguments as BlogData;
+    final argList = ModalRoute.of(context)!.settings.arguments as List;
+    blogDataModel = argList[0] as BlogData;
+    blogIndex = argList[1] as int;
 
     titleController.text = blogDataModel.title!;
     subtitleController.text = blogDataModel.subTitle!;
@@ -168,6 +172,7 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
                 Flexible(
                   flex: 2,
                   child: TextFormField(
+                    onTap: _selectDate,
                     keyboardType: TextInputType.datetime,
                     controller: dateController,
                     decoration: InputDecoration(
@@ -269,6 +274,20 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
     );
   }
 
+  void _selectDate() async {
+    final selectedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime.now());
+
+    if (selectedDate != null) {
+      setState(() {
+        dateController.text = getFormattedDateTime(selectedDate, 'yyyy-MM-dd');
+      });
+    }
+  }
+
   void _updateBlog() {
     if (form_key.currentState!.validate()) {
       final updatedBlogDataModel = BlogData(
@@ -291,7 +310,7 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
       // print(blogDataModel2.toString());
 
       Provider.of<BlogProvider>(context, listen: false)
-          .updateBlog(updatedBlogDataModel);
+          .updateBlog(updatedBlogDataModel, blogIndex);
       Navigator.pop(context, updatedBlogDataModel);
 
       // print(updatedBlogDataModel.toString());

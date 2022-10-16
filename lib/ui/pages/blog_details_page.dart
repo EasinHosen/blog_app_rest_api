@@ -44,6 +44,10 @@ class BlogDetailsPage extends StatelessWidget {
                     height: 10,
                   ),
                   Text('description: ${blogDataModel.description}'),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text('date: ${blogDataModel.date}'),
                 ],
               ),
             ),

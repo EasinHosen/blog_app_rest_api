@@ -1,5 +1,6 @@
 import 'package:blog_app/models/blog_model.dart';
 import 'package:blog_app/provider/blog_provider.dart';
+import 'package:blog_app/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,8 @@ class _NewBlogPageState extends State<NewBlogPage> {
   final form_key = GlobalKey<FormState>();
 
   String? dropdownCategoryId;
+
+  // DateTime? _productPurchaseDate;
 
   var catIdList = [
     '1',
@@ -147,6 +150,8 @@ class _NewBlogPageState extends State<NewBlogPage> {
                 Flexible(
                   flex: 2,
                   child: TextFormField(
+                    // enabled: false,
+                    onTap: _selectDate,
                     keyboardType: TextInputType.datetime,
                     controller: dateController,
                     decoration: InputDecoration(
@@ -246,6 +251,20 @@ class _NewBlogPageState extends State<NewBlogPage> {
         ),
       ),
     );
+  }
+
+  void _selectDate() async {
+    final selectedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime.now());
+
+    if (selectedDate != null) {
+      setState(() {
+        dateController.text = getFormattedDateTime(selectedDate, 'yyyy-MM-dd');
+      });
+    }
   }
 
   void _saveBlog() async {

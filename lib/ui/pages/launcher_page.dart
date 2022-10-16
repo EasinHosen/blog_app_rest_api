@@ -1,9 +1,8 @@
-import 'package:blog_app/provider/blog_provider.dart';
-import 'package:blog_app/ui/pages/blog_page.dart';
 import 'package:blog_app/ui/pages/login_page.dart';
 import 'package:blog_app/utils/auth_pref.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
+import 'blog_page.dart';
 
 class LauncherPage extends StatefulWidget {
   const LauncherPage({Key? key}) : super(key: key);
@@ -20,12 +19,9 @@ class _LauncherPageState extends State<LauncherPage> {
     // TODO: implement initState
     getLoginStat().then((value) {
       if (value) {
-        getToken().then((token) async => {
+        getToken().then((token) => {
               if (token != null || token!.isNotEmpty)
                 {
-                  await Provider.of<BlogProvider>(context, listen: false)
-                      .getBlogList(),
-                  // .getBlogs(),
                   Navigator.pushReplacementNamed(context, BlogPage.routeName),
                 }
             });

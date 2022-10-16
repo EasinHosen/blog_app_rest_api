@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/user_provider.dart';
@@ -121,17 +122,10 @@ class _LoginPageState extends State<LoginPage> {
           userEmailController.text, passwordController.text);
 
       if (provider.loginSucceeded) {
-        // String token = provider.userModel!.data!.token!;
-        // print(token);
-        SnackBar snackBar = const SnackBar(content: Text('Login Successful!'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        EasyLoading.showToast('Login successful!');
         Navigator.pushReplacementNamed(context, BlogPage.routeName);
-        // print(getLoginStat());
-        // print(getToken());
       } else {
-        SnackBar snackBar =
-            const SnackBar(content: Text('Something went wrong!'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        EasyLoading.showToast('Something went wrong!');
       }
     }
   }

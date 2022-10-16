@@ -1,68 +1,52 @@
-import 'package:blog_app/models/blog_model.dart';
-import 'package:blog_app/provider/blog_provider.dart';
 import 'package:blog_app/provider/user_provider.dart';
 import 'package:blog_app/ui/pages/launcher_page.dart';
 import 'package:blog_app/ui/pages/update_blog_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../utils/auth_pref.dart';
+import '../../provider/blog_provider.dart';
 import 'blog_details_page.dart';
 import 'new_blog_page.dart';
 
-class BlogPage extends StatefulWidget {
+class BlogPage extends StatelessWidget {
   const BlogPage({Key? key}) : super(key: key);
   static const String routeName = '/blog_page';
 
   @override
-  State<BlogPage> createState() => _BlogPageState();
-}
-
-class _BlogPageState extends State<BlogPage> {
-  late Future<BlogResponseModel> blogResponseModel;
-  late final BlogProvider blogProvider;
-  // late List<BlogData> blogList;
-
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    blogProvider = Provider.of<BlogProvider>(context, listen: false);
-    // blogResponseModel = blogProvider.getBlogs();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    getToken().then((value) => print(value));
+    Provider.of<BlogProvider>(context, listen: false).getBlogs();
+    RefreshController refreshController =
+        RefreshController(initialRefresh: false);
+
+    void onRefresh() async {
+      await Provider.of<BlogProvider>(context, listen: false).getBlogs();
+      EasyLoading.showToast('Page refreshed');
+      refreshController.refreshCompleted();
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Blog'),
+        title: const Text('Blogs'),
         actions: [
           PopupMenuButton(
             itemBuilder: (context) => [
               PopupMenuItem(
-                child: const Text(
-                  'Refresh',
-                ),
-                onTap: () {
-                  // blogProvider.getBlogs();
-                  blogProvider.getBlogList();
-                  setState(() {});
-                },
-              ),
-              PopupMenuItem(
-                child: const Text(
-                  'Logout',
-                ),
-                onTap: () async {
-                  await Provider.of<UserProvider>(context, listen: false)
-                      .logout();
-                  Navigator.pushReplacementNamed(
-                      context, LauncherPage.routeName);
-                },
-              ),
+                  child: const Text('Logout'),
+                  onTap: () {
+                    _showConfirmation(context, 'Logging out?').then(
+                      (value) {
+                        if (value == true) {
+                          Provider.of<UserProvider>(context, listen: false)
+                              .logout();
+                          Navigator.pushReplacementNamed(
+                              context, LauncherPage.routeName);
+                          EasyLoading.showToast('Logged out');
+                        }
+                      },
+                    );
+                  }),
             ],
           ),
         ],
@@ -72,89 +56,95 @@ class _BlogPageState extends State<BlogPage> {
         onPressed: () {
           Navigator.pushNamed(context, NewBlogPage.routeName).then((value) {
             if (value != null) {
-              // print(value);
-              blogProvider.getBlogList().then((value) => setState(() {}));
+              EasyLoading.showToast('New blog created!');
             } else {
-              print('canceled');
+              EasyLoading.showToast('Canceled!');
             }
           });
         },
       ),
-      body: SafeArea(
-        child: FutureBuilder<List<BlogData>>(
-          future: blogProvider.getBlogList(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                // itemCount: blogList.length,
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final blog = snapshot.data![index];
-                  return ListTile(
-                    title: Text(blog.title!),
-                    subtitle: Text(blog.subTitle!),
-                    trailing: PopupMenuButton(
-                      itemBuilder: (context) {
-                        return [
-                          const PopupMenuItem(
-                            value: 1,
-                            child: Text('Edit'),
-                          ),
-                          const PopupMenuItem(
-                            value: 2,
-                            child: Text('Delete'),
-                          ),
-                        ];
-                      },
-                      onSelected: (int value) {
-                        if (value == 1) {
-                          Navigator.pushNamed(
-                            context,
-                            UpdateBlogPage.routeName,
-                            arguments: blog,
-                          ).then((value) {
-                            if (value != null) {
-                              blogProvider
-                                  .getBlogList()
-                                  .then((value) => setState(() {}));
-                            } else {
-                              EasyLoading.showToast('Canceled');
-                            }
-                          });
-                        } else if (value == 2) {
-                          _showConfirmation(context).then((value) {
-                            if (value == true) {
-                              blogProvider.deleteBlog(blog.id!);
-                              setState(() {});
-                            }
-                          });
-                        }
-                      },
-                    ),
-                    onTap: () {
-                      Navigator.pushNamed(context, BlogDetailsPage.routeName,
-                          arguments: blog);
-                    },
-                  );
-                },
-              );
-            } else if (snapshot.hasError) {
-              return const Center(child: Text('Failed to load data!'));
-            }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+      body: Center(
+        child: Consumer<BlogProvider>(
+          builder: (context, blogProvider, child) {
+            final blogList = blogProvider.blogList;
+            return blogList.isEmpty && !blogProvider.loadingError
+                ? const CircularProgressIndicator()
+                : blogProvider.loadingError
+                    ? const Text('Error loading data!')
+                    : SmartRefresher(
+                        onRefresh: onRefresh,
+                        controller: refreshController,
+                        child: ListView.builder(
+                          itemCount: blogList.length,
+                          itemBuilder: (context, index) {
+                            final blog = blogList[index];
+                            return ListTile(
+                              title: Text(blog.title!),
+                              subtitle: Text(blog.subTitle!),
+                              trailing: PopupMenuButton(
+                                itemBuilder: (context) {
+                                  return [
+                                    const PopupMenuItem(
+                                      value: 1,
+                                      child: Text('Edit'),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 2,
+                                      child: Text('Delete'),
+                                    ),
+                                  ];
+                                },
+                                onSelected: (int value) {
+                                  if (value == 1) {
+                                    Navigator.pushNamed(
+                                      context,
+                                      UpdateBlogPage.routeName,
+                                      arguments: [blog, index],
+                                    ).then(
+                                      (value) {
+                                        if (value != null) {
+                                          EasyLoading.showToast(
+                                              'Blog updated!');
+                                        } else {
+                                          EasyLoading.showToast('Canceled');
+                                        }
+                                      },
+                                    );
+                                  } else if (value == 2) {
+                                    _showConfirmation(context, 'Delete blog?')
+                                        .then(
+                                      (value) {
+                                        if (value == true) {
+                                          blogProvider.deleteBlog(
+                                              blog.id!, index);
+                                        }
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  BlogDetailsPage.routeName,
+                                  arguments: blog,
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      );
           },
         ),
       ),
     );
   }
 
-  Future<bool?> _showConfirmation(BuildContext context) {
+  Future<bool?> _showConfirmation(BuildContext context, String title) {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete blog'),
+        title: Text(title),
         content: const Text('Are you sure?'),
         actions: [
           TextButton(
